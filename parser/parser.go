@@ -6,6 +6,7 @@ import (
 	"monkey_interpreter/lexer"
 	"monkey_interpreter/token"
 	"strconv"
+	"reflect"
 )
 
 type Parser struct {
@@ -88,9 +89,11 @@ func (p *Parser) ParseProgram() *ast.Program {
 
 	for !p.curTokenIs(token.EOF) {
 		stmt := p.parseStatement()
-		if stmt != nil {
-			program.Statements = append(program.Statements, stmt)
-		}
+			val := reflect.ValueOf(stmt)
+			if val.Kind() == reflect.Ptr && val.IsNil() {
+			} else {
+				program.Statements = append(program.Statements, stmt)
+			}
 		p.nextToken()
 	}
 	return program
